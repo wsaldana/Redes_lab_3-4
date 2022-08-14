@@ -19,14 +19,18 @@ import slixmpp
 import base64, time
 import threading
 
+
+if sys.platform == 'win32' and sys.version_info >= (3, 8):
+     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 class Cliente(slixmpp.ClientXMPP):
     def __init__(self, usu, password):
         slixmpp.ClientXMPP.__init__(self, usu, password)
         self.usu = usu
         self.password = password
         self.add_event_handler("session_start", self.login)
-        self.add_event_handler("register", self.registro)
-        self.add_event_handler("message", self.mensaje)
+        #self.add_event_handler("register", self.registro)
+        #self.add_event_handler("message", self.mensaje)
 
     async def login(self, event):
         self.send_presence()
@@ -59,40 +63,79 @@ class Cliente(slixmpp.ClientXMPP):
             time.sleep(3)
             print("----------100/100%")
             print("-----Has añadido a " + str(contacto) + " exitosamente-----")
-
-        def DeleteUser():
-            self.register_plugin('xep_0030')    
-            self.register_plugin('xep_0004') 
-            self.register_plugin('xep_0077')
-            self.register_plugin('xep_0199')
-            self.register_plugin('xep_0066')
+        
+        def Delete():
+            self.send_presence()
+            self.get_roster()
 
             delete = self.Iq()
             delete['type'] = 'set'
-            delete['from'] = self.boundjid.user
-            delete['register']['remove'] = True
-            delete.send()
+            delete['from'] = self.user
+            fragment = ET.fromstring("<query xmlns='jabber:iq:register'><remove/></query>")
+            delete.append(fragment)
+
+            try:
+                delete.send()
+                print("Cuenta Borrada")
+            except IqError as e:
+            
+                print("Error", e)
+            except IqTimeout:
+
+                print("timeout del server")
+            except Exception as e:
+        
+                print(e)  
 
             self.disconnect()
-            print("-----Espero crees otra cuenta, ya te extrañamos:(-----")
-
-
+        
+        while True:
+            print("-----------------------------")
+            print("|     MENU DE FUNCIONES     |")
+            print("-----------------------------")
+            print("|1.  Mostrar Contactos      |")
+            print("|2.  Agregar Contacto       |")
+            print("|3.  Detalles Contacto      |")
+            print("|4.  Mensaje Directo        |")
+            print("|5.  Conversación Grupal    |")
+            print("|6.  Mensaje de Presenca    |")
+            print("|7.  Notificaciones         |")
+            print("|8.  Archivos               |")
+            print("|9.  Eliminar               |")
+            print("|10. Salir                  |")
+            print("-----------------------------")
+            op = input("Ingrese opción:\t")
+  
 op = ""
-
 print("----------------------------")
 print("|     MENU DE OPCIONES     |")
 print("----------------------------")
 print("|1. Registrar Cuenta       |")
 print("|2. Iniciar Sesión         |")
-print("|3. Eliminar Cuenta        |")
+print("|3. Salir                  |")
 print("----------------------------")
 op = input("Ingrese opción:\t")
 
 if op == "1":
-    #crear cuenta
-    print("crear cuenta")
+    usu = input("Ingrese usuario(usuario@alumchat.fun): ")
+    password = getpass("Ingrese contraseña: ")
+    xmpp = Cliente(usu,password)
+    xmpp.register_plugin('xep_0004') # Data forms
+    xmpp.register_plugin('xep_0066') # Out-of-band Data
+    xmpp.register_plugin('xep_0077')
+    xmpp.register_plugin('xep_0085')
+    xmpp['xep_0077'].force_registration = True
+    xmpp.connect()
+    xmpp.process()
 
 elif op == "2":
     usu = input("Ingrese usuario(usuario@alumchat.fun): ")
     password = getpass("Ingrese contraseña: ")
-
+    xmpp = Cliente(usu, password)
+    xmpp.register_plugin('xep_0030') 
+    xmpp.register_plugin('xep_0199') 
+    xmpp.connect()
+    xmpp.process(forever=False)
+                
+elif op == "3":
+    exit()

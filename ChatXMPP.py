@@ -123,6 +123,14 @@ class Cliente(slixmpp.ClientXMPP):
         for res, pres in estado.items():
             print("Estado: ", estado[res]["status"])
             print("Prioridad: ", estado[res]["priority"])
+
+    #def GroupMSG(self):
+
+    def PresMSG(self):
+        estado = input("Actualiza tu estado(Available, Not Available, Do not Disturb): ")
+        info = input("Que información quiere mostrar en el perfil (chat, away, dnd): ")
+        self.send_presence(pshow=info, pstatus=estado)
+        print("--------Se ha actualizado el estado--------")
         
     async def start(self, event):
         self.send_presence()
@@ -163,7 +171,7 @@ class Cliente(slixmpp.ClientXMPP):
                 print("pendiente")
 
             elif(op == "6"):
-                print("pendiente")
+                self.PresMSG()
 
             elif(op == "7"):
                 print("pendiente")

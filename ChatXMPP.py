@@ -158,7 +158,6 @@ class Cliente(slixmpp.ClientXMPP):
             
             elif(op == "4"):
                 self.DM()
-                self.logout()
             
             elif(op == "5"):
                 print("pendiente")

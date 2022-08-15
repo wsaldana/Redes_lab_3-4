@@ -111,16 +111,19 @@ class Cliente(slixmpp.ClientXMPP):
 
     def UserInfo(self):
         self.get_roster()
-        usuario = input("Usuario: ")
-        contactos = self.client_roster.presence(usuario)
-        for res, pres in contactos.items():
-            show = 'chat'
-            if pres['show']:
-                show = pres['show']
-            print("     INFO:")
-            print('        ', show)
-            print('     Estado: ', pres['status'])
+        usuario = input("Ingrese usuario del contacto del que quiere información(ejemplo@alumchat.fun): ")
+        estado = self.client_roster.presence(usuario)
+        subs = self.client_roster[usuario]['subscription']
+        grupos = self.client_roster[usuario]['groups']
 
+        print("--------INFORMACIÓN--------")
+        print("Usuario: ", usuario)
+        print("Subscripción: ", subs)
+        print("Grupos", grupos)
+        for res, pres in estado.items():
+            print("Estado: ", estado[res]["status"])
+            print("Prioridad: ", estado[res]["priority"])
+        
     async def start(self, event):
         self.send_presence()
         await self.get_roster()

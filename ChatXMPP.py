@@ -137,7 +137,7 @@ class Cliente(slixmpp.ClientXMPP):
 
         delete = self.Iq()
         delete['type'] = 'set'
-        delete['from'] = self.user
+        delete['from'] = self.usu
         fragment = ET.fromstring("<query xmlns='jabber:iq:register'><remove/></query>")
         delete.append(fragment)
 

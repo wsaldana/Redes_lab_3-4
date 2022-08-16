@@ -42,12 +42,6 @@ class Cliente(slixmpp.ClientXMPP):
         self.disconnect()
         print("-----Sesión cerrada, Conectese Pronto:)-----")
     
-    def sendMsg(self,to):
-        message = input("Ingrese mensaje a enviar: ")
-        self.send_message(mto=to,
-                          mbody=message,
-                          mtype='chat')
-
     def AddContact(self):
         contacto = input("Ingrese el contacto(ejemplo@alumchat.fun): ")
         try:

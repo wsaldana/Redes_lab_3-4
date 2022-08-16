@@ -61,31 +61,6 @@ class Cliente(slixmpp.ClientXMPP):
         self.send_presence()
         self.get_roster()
 
-    def Delete(self):
-        self.send_presence()
-        self.get_roster()
-
-        delete = self.Iq()
-        delete['type'] = 'set'
-        delete['from'] = self.user
-        fragment = ET.fromstring("<query xmlns='jabber:iq:register'><remove/></query>")
-        delete.append(fragment)
-
-        try:
-            delete.send()
-            print("Cuenta Borrada")
-        except IqError as e:
-        
-            print("Error", e)
-        except IqTimeout:
-
-            print("timeout del server")
-        except Exception as e:
-    
-            print(e)  
-
-        self.disconnect()   
-
     def ShowContacts(self):
         print('Contactos %s' % self.boundjid.bare)
         groups = self.client_roster.groups()
@@ -124,7 +99,16 @@ class Cliente(slixmpp.ClientXMPP):
             print("Estado: ", estado[res]["status"])
             print("Prioridad: ", estado[res]["priority"])
 
-    #def GroupMSG(self):
+    def GroupMSG(self):
+        self.register_plugin('xep_0030')
+        self.register_plugin('xep_0045')
+        self.register_plugin('xep_0199')
+
+        room = input("Nombre del grupo (ejemplo@conference.alumchat.fun): ")
+        nickname = input("Apodo/Alias ")
+        message = input('Mensaje a enviar al grupo: ')
+        self.plugin['xep_0045'].join_muc(room, nickname)
+        self.send_message(mto=room, mbody=message, mtype='groupchat')
 
     def PresMSG(self):
         estado = input("Actualiza tu estado(Available, Not Available, Do not Disturb): ")
@@ -137,6 +121,40 @@ class Cliente(slixmpp.ClientXMPP):
         notification["chat_state"] = "composing"
         notification["to"] = to
         notification.send()
+
+    def sendF(self):
+        para = input("Indique el usuario al que quiere enviar: ") 
+        archivo = input("Direccion del archivo: ")
+        
+        with open(archivo, 'rb') as img:
+            file_ = base64.b64encode(img.read()).decode('utf-8')
+
+        self.send_message(mto=para, mbody=file_, msubject='send_file', mtype='chat')
+
+    def Delete(self):
+        self.send_presence()
+        self.get_roster()
+
+        delete = self.Iq()
+        delete['type'] = 'set'
+        delete['from'] = self.user
+        fragment = ET.fromstring("<query xmlns='jabber:iq:register'><remove/></query>")
+        delete.append(fragment)
+
+        try:
+            delete.send()
+            print("Cuenta Borrada")
+        except IqError as e:
+        
+            print("Error", e)
+        except IqTimeout:
+
+            print("timeout del server")
+        except Exception as e:
+    
+            print(e)  
+
+        self.disconnect()   
 
     async def start(self, event):
         self.send_presence()
@@ -174,16 +192,16 @@ class Cliente(slixmpp.ClientXMPP):
                 self.DM()
             
             elif(op == "5"):
-                print("pendiente")
+                self.GroupMSG()
 
             elif(op == "6"):
                 self.PresMSG()
 
             elif(op == "7"):
-                print("pendiente")
+                self.sendF()
 
             elif(op == "8"):
-                print("pendiente")
+                self.Delete()
 
             elif(op == "9"):
                 menu = False

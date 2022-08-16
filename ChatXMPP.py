@@ -34,6 +34,7 @@ class Cliente(slixmpp.ClientXMPP):
 
     def DM(self):
         para = input("Ingrese el contacto(ejemplo@alumchat.fun): ")
+        self.Notification(para)
         msg = input("Ingrese mensaje:  ")
         self.send_message(mto = para, mbody = msg, mtype = "chat")
     
@@ -41,7 +42,6 @@ class Cliente(slixmpp.ClientXMPP):
         self.disconnect()
         print("-----Sesión cerrada, Conectese Pronto:)-----")
     
-    # 1 to 1 message
     def sendMsg(self,to):
         message = input("Ingrese mensaje a enviar: ")
         self.send_message(mto=to,
@@ -132,6 +132,12 @@ class Cliente(slixmpp.ClientXMPP):
         self.send_presence(pshow=info, pstatus=estado)
         print("--------Se ha actualizado el estado--------")
         
+    def Notification(self, to):
+        notification = self.Message()
+        notification["chat_state"] = "composing"
+        notification["to"] = to
+        notification.send()
+
     async def start(self, event):
         self.send_presence()
         await self.get_roster()
@@ -157,7 +163,7 @@ class Cliente(slixmpp.ClientXMPP):
 
             if (op == "1"):
                 self.ShowContacts()
-            
+
             elif (op == "2"):
                 self.AddContact()
             

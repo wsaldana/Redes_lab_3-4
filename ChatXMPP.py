@@ -126,8 +126,8 @@ class Cliente(slixmpp.ClientXMPP):
         para = input("Indique el usuario al que quiere enviar: ") 
         archivo = input("Direccion del archivo: ")
         
-        with open(archivo, 'rb') as img:
-            file_ = base64.b64encode(img.read()).decode('utf-8')
+        with open(archivo, 'rb') as f:
+            file_ = base64.b64encode(f.read()).decode('utf-8')
 
         self.send_message(mto=para, mbody=file_, msubject='send_file', mtype='chat')
 

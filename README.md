@@ -1,4 +1,4 @@
-# Project Title
+# Project #1: Redes
 
 This projects consisted in creating a client that supports the XMPP protocol. It should work and have implemented the following characteristics.
 

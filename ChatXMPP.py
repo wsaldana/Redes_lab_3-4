@@ -19,10 +19,18 @@ import slixmpp
 import base64, time
 import threading
 
-
+#-----------------------------------------------
+#| Esta linea permite que asyncio en versiones |
+#| más recientes de Python, tenga todos sus    |
+#| permiso(funcione)                           |
+#-----------------------------------------------
 if sys.platform == 'win32' and sys.version_info >= (3, 8):
      asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+#------------------------------------------------
+#| Clase para llevar a cabo todas las funciones |
+#| del cliente via el protocolo XMPP            |
+#------------------------------------------------
 class Cliente(slixmpp.ClientXMPP):
     def __init__(self, usu, password):
         slixmpp.ClientXMPP.__init__(self, usu, password)
@@ -32,16 +40,25 @@ class Cliente(slixmpp.ClientXMPP):
         #self.add_event_handler("add_contact", self.AddContact)
         #self.add_event_handler("message", self.mensaje)
 
+    #-------------------------------------
+    #|Función para enviar mensajes 1 a 1 |
+    #-------------------------------------
     def DM(self):
         para = input("Ingrese el contacto(ejemplo@alumchat.fun): ")
         self.Notification(para)
         msg = input("Ingrese mensaje:  ")
         self.send_message(mto = para, mbody = msg, mtype = "chat")
     
+    #----------------------------
+    #|Función para cerrar sesión|
+    #----------------------------
     def logout(self):
         self.disconnect()
         print("-----Sesión cerrada, Conectese Pronto:)-----")
     
+    #------------------------------
+    #|Función para añadir contacto|
+    #------------------------------
     def AddContact(self):
         contacto = input("Ingrese el contacto(ejemplo@alumchat.fun): ")
         try:
@@ -55,12 +72,14 @@ class Cliente(slixmpp.ClientXMPP):
         self.send_presence()
         self.get_roster()
 
+    #--------------------------------
+    #|Función para mostrar contactos|
+    #--------------------------------
     def ShowContacts(self):
         print('Contactos %s' % self.boundjid.bare)
         groups = self.client_roster.groups()
         for group in groups:
-            print('\n%s' % group)
-            print('-' * 72)
+            print('Grupo: %s' % group)
             for jid in groups[group]:
                 name = self.client_roster[jid]['name']
                 if self.client_roster[jid]['name']:
@@ -76,8 +95,10 @@ class Cliente(slixmpp.ClientXMPP):
                     print('   - %s (%s)' % (res, show))
                     if pres['status']:
                         print('       %s' % pres['status'])
-                        print('-' * 72)
 
+    #-------------------------------------------------
+    #|Función para mostrar información de un contacto|
+    #-------------------------------------------------
     def UserInfo(self):
         self.get_roster()
         usuario = input("Ingrese usuario del contacto del que quiere información(ejemplo@alumchat.fun): ")
@@ -93,6 +114,9 @@ class Cliente(slixmpp.ClientXMPP):
             print("Estado: ", estado[res]["status"])
             print("Prioridad: ", estado[res]["priority"])
 
+    #--------------------------------
+    #|Función para mensajería grupal|
+    #--------------------------------
     def GroupMSG(self):
         self.register_plugin('xep_0030')
         self.register_plugin('xep_0045')
@@ -104,18 +128,27 @@ class Cliente(slixmpp.ClientXMPP):
         self.plugin['xep_0045'].join_muc(room, nickname)
         self.send_message(mto=room, mbody=message, mtype='groupchat')
 
+    #-----------------------------------
+    #|Función para mensaje de presencia|
+    #-----------------------------------
     def PresMSG(self):
         estado = input("Actualiza tu estado(Available, Not Available, Do not Disturb): ")
         info = input("Que información quiere mostrar en el perfil (chat, away, dnd): ")
         self.send_presence(pshow=info, pstatus=estado)
         print("--------Se ha actualizado el estado--------")
-        
+
+    #----------------------------------
+    #|Función para mandar notificación|
+    #----------------------------------
     def Notification(self, to):
         notification = self.Message()
         notification["chat_state"] = "composing"
         notification["to"] = to
         notification.send()
 
+    #----------------------------------------
+    #|Función para mandar archivos en base64|
+    #----------------------------------------
     def sendF(self):
         para = input("Indique el usuario al que quiere enviar: ") 
         archivo = input("Direccion del archivo: ")
@@ -125,6 +158,9 @@ class Cliente(slixmpp.ClientXMPP):
 
         self.send_message(mto=para, mbody=file_, msubject='send_file', mtype='chat')
 
+    #----------------------------------
+    #|Función para eliminar una cuenta|
+    #----------------------------------
     def Delete(self):
         self.send_presence()
         self.get_roster()
@@ -150,6 +186,9 @@ class Cliente(slixmpp.ClientXMPP):
 
         self.disconnect()   
 
+    #---------------------------------------
+    #|Función asincronica que lleva el menú|
+    #---------------------------------------
     async def start(self, event):
         self.send_presence()
         await self.get_roster()
@@ -204,6 +243,9 @@ class Cliente(slixmpp.ClientXMPP):
             self.send_presence()
             await self.get_roster()
 
+#----------------------------
+#|Inicio del Programa|
+#----------------------------
 logging.basicConfig(level=logging.DEBUG, format=None)
 op = ""
 print("----------------------------")
@@ -221,6 +263,7 @@ if op == "1":
     psd = getpass("Ingrese contraseña: ")
 
 elif op == "2":
+    #Login
     usu = input("Ingrese usuario(usuario@alumchat.fun): ")
     password = getpass("Ingrese contraseña: ")
     xmpp = Cliente(usu, password)

@@ -3,7 +3,7 @@
 #|----------------------------------|
 #| Redes - Sección 20 - 12/08/2022  |
 #|----------------------------------|
-#| PROYECTO 1: Apartado ADMIN TOOLS |
+#|      PROYECTO 1: CHAT XMPP       |
 #|  Javier Alejandro Cotto Argueta  |
 #-----------------------------------#
 

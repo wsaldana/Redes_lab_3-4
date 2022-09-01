@@ -1,19 +1,23 @@
-# Project #1: Redes
+# Project #2: Redes
 
-This projects consisted in creating a client that supports the XMPP protocol. It should work and have implemented the following characteristics.
+This projects consisted in creating a topology and simulate the process of routing with three algorithms. Also the process in which the routing tables are filled.
 
-- [ ] Register a new account on the server
-- [x] Sign in with an account
-- [x] Sign out with an account
-- [x] Remove server account
-- [x] Show all users/contacts and their status
-- [x] Add a user to contacts
+## ALGORITHMS
+- Flooding
+- Dijkstra Link State
+- Distance Vector
+
+## Implementations
+
+- [x] Sign in with an student account
+- [x] Name request
+- [x] Request the algorithm to execute
+- [x] Loading the information that each algorithm requires
+- [x] Mechanisms to indicate the start of route calculations, as well as the end of convergence
+      of an algorithm, and the announcement that the nodes are ready to send messages.
 - [x] Show contact details of a user
-- [x] 1 to 1 communication with any user/contact
-- [x] Participate in group conversations
-- [x] Define presence message
-- [x] Send/receive notifications
-- [x] Send/receive files
+- [x] Viewing the calculated routing table
+- [x] When a node receives a message, it must indicate from which node it was received and to which node it was received.
 
 The used domain was: alumchat.fun
 
@@ -30,7 +34,9 @@ pip install getpass, argparse, slixmpp
 You should have Python and the libraries listed before installed, and the ChatXMPP.py should work perfectly.
 
 
-## Author
+## Authors
+  - **Jose Abraham Gutierrez Corado** - from Universidad del Valle de Guatemala - Carnet 19111
+  - **Walter Danilo Saldaña Salguero** - from Universidad del Valle de Guatemala - Carnet 19897
   - **Javier Alejandro Cotto Argueta** - from Universidad del Valle de Guatemala - Carnet 19324
 
 ## Acknowledgments

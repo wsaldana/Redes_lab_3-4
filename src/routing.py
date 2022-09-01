@@ -11,13 +11,31 @@ class Rounting(abc.ABC):
 
 
 class Flooding(Rounting):
+    def __init__(self) -> None:
+        self.passed = []
+        self.way = {}
+        self.graph = Topology().read()
+
     def route(self, sender: str, receiver: str) -> dict:
-        way = {}
-        graph = Topology().read()
-        for edge in graph:
-            way[edge[0]] = []
-            way[edge[0]].append(edge[1])
-        return way
+        self.passed.append(sender)
+        self.flood([sender])
+        return self.way
+
+    def flood(self, nodes):
+        next_nodes = []
+
+        for node in nodes:
+            for edge in self.graph:
+                if edge[0] in node:
+                    if edge[0] not in self.way.keys():
+                        self.way[edge[0]] = []
+                    if edge[1] not in self.passed:
+                        self.way[edge[0]].append(edge[1])
+                        next_nodes.append(edge[1])
+                        self.passed += next_nodes
+
+        if(len(next_nodes) > 0):
+            self.flood(next_nodes)
 
 
 class DistanceVector(Rounting):

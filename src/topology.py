@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 class Topology:
     def read(self):
         # Opening JSON file
-        with open('topologia.txt') as json_file:
+        with open('../topologia.txt') as json_file:
             data = json.load(json_file)
             a = list(data['config'].items())
 

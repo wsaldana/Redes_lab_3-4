@@ -27,6 +27,14 @@ class Dijkstra(Rounting):
 class Router:
 
     alg: Rounting = None
+    table: dict = {
+        "A": "walt.gfe@alumchat.fun",
+        "B": "walt.gfe@alumchat.fun",
+        "C": "walt.gfe@alumchat.fun",
+        "D": "walt.gfe@alumchat.fun",
+        "E": "walt.gfe@alumchat.fun",
+        "F": "walt.gfe@alumchat.fun",
+    }
 
     def __init__(self, alg: str) -> None:
         if alg == 'flooding':

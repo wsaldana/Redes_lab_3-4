@@ -256,6 +256,9 @@ class Cliente(slixmpp.ClientXMPP):
                 menu = False
                 self.logout()
 
+            else:
+                print(self.router.get_route())
+
             self.send_presence()
             await self.get_roster()
 

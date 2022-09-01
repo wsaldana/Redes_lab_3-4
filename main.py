@@ -225,6 +225,7 @@ class Cliente(slixmpp.ClientXMPP):
             print("|7.  Archivos               |")
             print("|8.  Eliminar               |")
             print("|9.  Salir                  |")
+            print("|10. Obtener ruta           |")
             print("-----------------------------")
             op = input("Ingrese opción:\t")
 
@@ -257,7 +258,12 @@ class Cliente(slixmpp.ClientXMPP):
                 self.logout()
 
             else:
-                print(self.router.get_route())
+                sender = input("Nodo inicial: ").upper()
+                receiver = input("Nodo receptor: ").upper()
+
+                print(
+                    self.router.get_route(sender, receiver)
+                )
 
             self.send_presence()
             await self.get_roster()

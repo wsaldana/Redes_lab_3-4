@@ -1,12 +1,14 @@
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 
 class Topology:
     def read(self):
         # Opening JSON file
-        with open('../topologia.txt') as json_file:
+        path = Path(__file__).parent / "../topologia.txt"
+        with open(path) as json_file:
             data = json.load(json_file)
             a = list(data['config'].items())
 

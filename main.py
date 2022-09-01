@@ -35,9 +35,14 @@ class Cliente(slixmpp.ClientXMPP):
         slixmpp.ClientXMPP.__init__(self, usu, password)
         self.usu = usu
         self.password = password
-        self.add_event_handler("session_start", self.start)
         self.router = Router(router)
         self.node = Node(node, usu)
+
+        self.add_event_handler("session_start", self.start)
+        self.add_event_handler("message", self.receive_msg)
+
+    async def receive_msg(self, msg):
+        print(msg)
 
     #-------------------------------------
     #|Función para enviar mensajes 1 a 1 |

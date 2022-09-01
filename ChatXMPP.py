@@ -1,23 +1,22 @@
 #-----------------------------------#
 #|Universidad del Valle de Guatemala|
 #|----------------------------------|
-#| Redes - Sección 20 - 12/08/2022  |
+#| Redes - Sección 20 - 01/09/2022  |
 #|----------------------------------|
-#|      PROYECTO 1: CHAT XMPP       |
-#|  Javier Alejandro Cotto Argueta  |
+#|        LAB 3 Y 4: Routing        |
 #-----------------------------------#
 
 import sys
-import aiodns
 import asyncio
 import logging
 from getpass import getpass
-from argparse import ArgumentParser
 from slixmpp.exceptions import IqError, IqTimeout
-from slixmpp.xmlstream.stanzabase import ET, ElementBase 
+from slixmpp.xmlstream.stanzabase import ET
 import slixmpp
-import base64, time
-import threading
+import base64
+
+from .routing import Router
+from .models import Message, Node
 
 #-----------------------------------------------
 #| Esta linea permite que asyncio en versiones |
@@ -32,13 +31,13 @@ if sys.platform == 'win32' and sys.version_info >= (3, 8):
 #| del cliente via el protocolo XMPP            |
 #------------------------------------------------
 class Cliente(slixmpp.ClientXMPP):
-    def __init__(self, usu, password):
+    def __init__(self, usu, password, node: str = 'A', router: str = 'flooding'):
         slixmpp.ClientXMPP.__init__(self, usu, password)
         self.usu = usu
         self.password = password
         self.add_event_handler("session_start", self.start)
-        #self.add_event_handler("add_contact", self.AddContact)
-        #self.add_event_handler("message", self.mensaje)
+        self.router = Router(router)
+        self.node = Node(node, usu)
 
     #-------------------------------------
     #|Función para enviar mensajes 1 a 1 |
@@ -47,8 +46,14 @@ class Cliente(slixmpp.ClientXMPP):
         para = input("Ingrese el contacto(ejemplo@alumchat.fun): ")
         self.Notification(para)
         msg = input("Ingrese mensaje:  ")
-        self.send_message(mto = para, mbody = msg, mtype = "chat")
-    
+
+        json_msg = Message(msg, self.node.name, para)
+        receiver = self.router.get_next().name
+
+        self.send_message(
+            mto=receiver, mbody=json_msg.serialize(), mtype="chat"
+        )
+
     #----------------------------
     #|Función para cerrar sesión|
     #----------------------------

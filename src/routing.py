@@ -44,6 +44,11 @@ class DistanceVector(Rounting):
 
 
 class Dijkstra(Rounting):
+    def __init__(self) -> None:
+        self.passed = []
+        self.way = {}
+        self.graph = Topology().read()
+
     def route(self, sender: str, receiver: str) -> dict:
         ...
 

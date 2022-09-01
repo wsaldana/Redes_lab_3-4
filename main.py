@@ -48,15 +48,14 @@ class Cliente(slixmpp.ClientXMPP):
     #|Función para enviar mensajes 1 a 1 |
     #-------------------------------------
     def DM(self):
-        para = input("Ingrese el nombre del nodo: ")
+        de = input("Ingrese el nombre del nodo que envia: ")
+        para = input("Ingrese el nombre del nodo que recibe: ")
         self.Notification(para)
         msg = input("Ingrese mensaje:  ")
 
-        t = self.router.table
-
         json_msg = Message(
             msg,
-            list(t.keys())[list(t.values()).index(self.usu)],
+            de,
             para
         )
         # receiver = self.router.get_next().name

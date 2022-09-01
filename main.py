@@ -15,8 +15,8 @@ from slixmpp.xmlstream.stanzabase import ET
 import slixmpp
 import base64
 
-from .routing import Router
-from .models import Message, Node
+from src.routing import Router
+from src.models import Message, Node
 
 #-----------------------------------------------
 #| Esta linea permite que asyncio en versiones |
@@ -43,15 +43,23 @@ class Cliente(slixmpp.ClientXMPP):
     #|Función para enviar mensajes 1 a 1 |
     #-------------------------------------
     def DM(self):
-        para = input("Ingrese el contacto(ejemplo@alumchat.fun): ")
+        para = input("Ingrese el nombre del nodo: ")
         self.Notification(para)
         msg = input("Ingrese mensaje:  ")
 
-        json_msg = Message(msg, self.node.name, para)
-        receiver = self.router.get_next().name
+        t = self.router.table
+
+        json_msg = Message(
+            msg,
+            list(t.keys())[list(t.values()).index(self.usu)],
+            para
+        )
+        # receiver = self.router.get_next().name
 
         self.send_message(
-            mto=receiver, mbody=json_msg.serialize(), mtype="chat"
+            mto=self.router.table[para],
+            mbody=json_msg.serialize(),
+            mtype="chat"
         )
 
     #----------------------------
@@ -180,16 +188,16 @@ class Cliente(slixmpp.ClientXMPP):
             delete.send()
             print("Cuenta Borrada")
         except IqError as e:
-        
+
             print("Error", e)
         except IqTimeout:
 
             print("timeout del server")
         except Exception as e:
-    
-            print(e)  
 
-        self.disconnect()   
+            print(e)
+
+        self.disconnect()
 
     #---------------------------------------
     #|Función asincronica que lleva el menú|
@@ -199,7 +207,6 @@ class Cliente(slixmpp.ClientXMPP):
         await self.get_roster()
 
         menu = True
-        logging.basicConfig(level=logging.DEBUG, format=None)
 
         while (menu):
             print("-----------------------------")
@@ -222,13 +229,13 @@ class Cliente(slixmpp.ClientXMPP):
 
             elif (op == "2"):
                 self.AddContact()
-            
+
             elif(op == "3"):
                 self.UserInfo()
-            
+
             elif(op == "4"):
                 self.DM()
-            
+
             elif(op == "5"):
                 self.GroupMSG()
 
@@ -244,40 +251,42 @@ class Cliente(slixmpp.ClientXMPP):
             elif(op == "9"):
                 menu = False
                 self.logout()
-            
+
             self.send_presence()
             await self.get_roster()
 
-#----------------------------
-#|Inicio del Programa|
-#----------------------------
-logging.basicConfig(level=logging.DEBUG, format=None)
-op = ""
-print("----------------------------")
-print("|     MENU DE OPCIONES     |")
-print("----------------------------")
-print("|1. Registrar Cuenta       |")
-print("|2. Iniciar Sesión         |")
-print("|3. Salir                  |")
-print("----------------------------")
-op = input("Ingrese opción:\t")
 
-if op == "1":
-    #Registro pendiente NO SIRVE
-    usu = input("Ingrese nuevo usuario: ")
-    psd = getpass("Ingrese contraseña: ")
+if __name__ == "__main__":
+    # ----------------------------
+    # |   Inicio del Programa    |
+    # ----------------------------
+    logging.basicConfig(level=logging.ERROR, format=None)
+    op = ""
+    print("----------------------------")
+    print("|     MENU DE OPCIONES     |")
+    print("----------------------------")
+    print("|1. Registrar Cuenta       |")
+    print("|2. Iniciar Sesión         |")
+    print("|3. Salir                  |")
+    print("----------------------------")
+    op = input("Ingrese opción:\t")
 
-elif op == "2":
-    #Login
-    usu = input("Ingrese usuario(usuario@alumchat.fun): ")
-    password = getpass("Ingrese contraseña: ")
-    xmpp = Cliente(usu, password)
-    xmpp.register_plugin('xep_0030') 
-    xmpp.register_plugin('xep_0199')
-    xmpp.register_plugin('xep_0045') # Mulit-User Chat (MUC)
-    xmpp.register_plugin('xep_0096') # Jabber Search 
-    xmpp.connect()
-    xmpp.process(forever=False)
-                
-elif op == "3":
-    exit()
+    if op == "1":
+        # Registro pendiente NO SIRVE
+        usu = input("Ingrese nuevo usuario: ")
+        psd = getpass("Ingrese contraseña: ")
+
+    elif op == "2":
+        # Login
+        usu = input("Ingrese usuario(usuario@alumchat.fun): ")
+        password = input("Ingrese contraseña: ")
+        xmpp = Cliente(usu, password)
+        xmpp.register_plugin('xep_0030')
+        xmpp.register_plugin('xep_0199')
+        xmpp.register_plugin('xep_0045') # Mulit-User Chat (MUC)
+        xmpp.register_plugin('xep_0096') # Jabber Search 
+        xmpp.connect()
+        xmpp.process(forever=False)
+
+    elif op == "3":
+        exit()

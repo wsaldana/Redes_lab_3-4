@@ -49,6 +49,7 @@ class Dijkstra(Rounting):
         self.way = {}
         self.edges, self.nodes = Topology().read()
         self.init_graph = self.graph_base()
+        self.graph = self.construct_graph()
     
     def graph_base(self):
         init_graph = {}
@@ -59,6 +60,20 @@ class Dijkstra(Rounting):
             init_graph[edge[0]][edge[1]] = 1
         
         return init_graph
+    
+    def construct_graph(self):
+        graph = {}
+        for node in self.nodes:
+            graph[node] = {}
+        
+        graph.update(self.init_graph)
+        
+        for node, edges in graph.items():
+            for adjacent_node, value in edges.items():
+                if graph[adjacent_node].get(node, False) == False:
+                    graph[adjacent_node][node] = value
+                    
+        return graph
 
     def route(self, sender: str, receiver: str) -> dict:
         ...

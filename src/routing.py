@@ -117,7 +117,19 @@ class Dijkstra(Rounting):
         return self.graph[node1][node2]
 
     def route(self, sender: str, receiver: str) -> dict:
-        ...
+        path = []
+        node = receiver
+        previous_nodes = self.Shortest_path(sender)
+        
+        while node != sender:
+            path.append(node)
+            node = previous_nodes[node]
+    
+        path.append(sender)
+        
+        self.way = reversed(path)
+
+        return self.way
     
     def Shortest_path(self, sender):
         unvisited_nodes = list(self.nodes)

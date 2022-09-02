@@ -47,11 +47,24 @@ class Dijkstra(Rounting):
     def __init__(self) -> None:
         self.passed = []
         self.way = {}
-        self.graph = Topology().read()
+        self.edges, self.nodes = Topology().read()
+        self.init_graph = self.graph_base()
+    
+    def graph_base(self):
+        init_graph = {}
+        for node in self.nodes:
+            init_graph[node] = {}
+        
+        for edge in self.edges:
+            init_graph[edge[0]][edge[1]] = 1
+        
+        return init_graph
 
     def route(self, sender: str, receiver: str) -> dict:
         ...
-
+    
+    def Shortest_path(self):
+        ...
 
 class Router:
 

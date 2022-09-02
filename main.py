@@ -278,21 +278,15 @@ if __name__ == "__main__":
     print("----------------------------")
     print("|     MENU DE OPCIONES     |")
     print("----------------------------")
-    print("|1. Registrar Cuenta       |")
-    print("|2. Iniciar Sesión         |")
-    print("|3. Salir                  |")
+    print("|1. Iniciar Sesión         |")
+    print("|2. Salir                  |")
     print("----------------------------")
     op = input("Ingrese opción:\t")
 
     if op == "1":
-        # Registro pendiente NO SIRVE
-        usu = input("Ingrese nuevo usuario: ")
-        psd = getpass("Ingrese contraseña: ")
-
-    elif op == "2":
         # Login
         usu = input("Ingrese usuario(usuario@alumchat.fun): ")
-        password = input("Ingrese contraseña: ")
+        password = getpass("Ingrese contraseña: ")
         xmpp = Cliente(usu, password)
         xmpp.register_plugin('xep_0030')
         xmpp.register_plugin('xep_0199')
@@ -301,5 +295,5 @@ if __name__ == "__main__":
         xmpp.connect()
         xmpp.process(forever=False)
 
-    elif op == "3":
+    elif op == "2":
         exit()

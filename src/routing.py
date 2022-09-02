@@ -74,6 +74,13 @@ class Dijkstra(Rounting):
                     graph[adjacent_node][node] = value
                     
         return graph
+    
+    def get_outgoing_edges(self, node):
+        connections = []
+        for out_node in self.nodes:
+            if self.graph[node].get(out_node, False) != False:
+                connections.append(out_node)
+        return connections
 
     def route(self, sender: str, receiver: str) -> dict:
         ...

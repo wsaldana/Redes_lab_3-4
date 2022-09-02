@@ -15,7 +15,7 @@ class Flooding(Rounting):
     def __init__(self) -> None:
         self.passed = []
         self.way = {}
-        self.graph = Topology().read()
+        self.graph, self.nodes = Topology().read()
 
     def route(self, sender: str, receiver: str) -> dict:
         self.passed.append(sender)
@@ -40,8 +40,38 @@ class Flooding(Rounting):
 
 
 class DistanceVector(Rounting):
+    def __init__(self) -> None:
+        self.graph, self.nodes = Topology().read()
+        self.V = len(self.nodes)
+        self.nodes = list(self.nodes)
+        self.graph_table = []
+        self.way = {}
+
     def route(self, sender: str, receiver: str) -> dict:
-        ...
+        self.graph_table.append([sender, receiver, 10])
+        self.bellman_ford(sender)
+        return self.way
+
+    def showRoutingTable(self, dist):
+        print("Vertex Distance from Source")
+        for i in range(self.V):
+            print("{0}\t\t{1}".format(i, dist[i]))
+
+    def bellman_ford(self, node):
+        dist = [float("Inf")] * self.V
+        dist[self.nodes.index(node)] = 0
+
+        for _ in range(self.V - 1):
+            for sender, receiver, w in self.graph_table:
+                if dist[self.nodes.index(sender)] != float("Inf") and dist[self.nodes.index(receiver)] + w < dist[self.nodes.index(sender)]:
+                    dist[self.nodes.index(receiver)] = dist[self.nodes.index(sender)] + w
+
+        for sender, receiver, w in self.graph_table:
+            if dist[self.nodes.index(sender)] != float("Inf") and dist[self.nodes.index(sender)] + w < dist[self.nodes.index(receiver)]:
+                print("Graph contains negative weight cycle")
+                return 
+
+        self.showRoutingTable(dist) 
 
 
 class Dijkstra(Rounting):

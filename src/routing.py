@@ -1,6 +1,6 @@
 import abc
 import sys
-
+import networkx as nx
 from .models import Node
 from .topology import Topology
 
@@ -41,37 +41,51 @@ class Flooding(Rounting):
 
 class DistanceVector(Rounting):
     def __init__(self) -> None:
-        self.graph, self.nodes = Topology().read()
+        self.graph, self.nodes, self.dg = Topology().read()
         self.V = len(self.nodes)
         self.nodes = list(self.nodes)
-        self.graph_table = []
+        self.graph = list(self.graph)
+        self.graph_table = self.addEdges()
         self.way = {}
-
+    
     def route(self, sender: str, receiver: str) -> dict:
-        self.graph_table.append([sender, receiver, 10])
-        self.bellman_ford(sender)
+
         return self.way
+    
+    def addEdges(self):
+        listG = []
 
-    def showRoutingTable(self, dist):
-        print("Vertex Distance from Source")
+        for k, v in self.graph:
+            listG.append([self.nodes.index(k), self.nodes.index(v), 1])
+        
+        return listG
+
+    def printArr(self, dist, routes):
+        print("VERTICES\tPESO\t\tRUTA")
         for i in range(self.V):
-            print("{0}\t\t{1}".format(i, dist[i]))
+            print("{0}\t\t{1}\t\t{2}".format(self.nodes[i], dist[i], routes[i]))
 
-    def bellman_ford(self, node):
+    def BellmanFord(self, src):
         dist = [float("Inf")] * self.V
-        dist[self.nodes.index(node)] = 0
+        dist[self.nodes.index(src)] = 0
 
         for _ in range(self.V - 1):
-            for sender, receiver, w in self.graph_table:
-                if dist[self.nodes.index(sender)] != float("Inf") and dist[self.nodes.index(receiver)] + w < dist[self.nodes.index(sender)]:
-                    dist[self.nodes.index(receiver)] = dist[self.nodes.index(sender)] + w
-
-        for sender, receiver, w in self.graph_table:
-            if dist[self.nodes.index(sender)] != float("Inf") and dist[self.nodes.index(sender)] + w < dist[self.nodes.index(receiver)]:
+            for u, v, w in self.graph_table:
+                if dist[u] != float("Inf") and dist[u] + w < dist[v]:
+                    dist[v] = dist[u] + w
+ 
+        for u, v, w in self.graph_table:
+            if dist[u] != float("Inf") and dist[u] + w < dist[v]:
                 print("Graph contains negative weight cycle")
-                return 
+                return
 
-        self.showRoutingTable(dist) 
+        #RUTAS
+        routes = []
+        for receiver in self.nodes:
+            nx.path_graph(self.dg)
+            routes.append(nx.bellman_ford_path(self.dg, src, receiver))
+        
+        self.printArr(dist, routes)
 
 
 class Dijkstra(Rounting):

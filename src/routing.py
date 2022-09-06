@@ -95,6 +95,7 @@ class Dijkstra(Rounting):
         self.edges, self.nodes = Topology().read()
         self.init_graph = self.graph_base()
         self.graph = self.construct_graph()
+        self.rutes = self.all_routes()
     
     def graph_base(self):
         init_graph = {}
@@ -131,19 +132,32 @@ class Dijkstra(Rounting):
         return self.graph[node1][node2]
 
     def route(self, sender: str, receiver: str) -> dict:
-        path = []
-        node = receiver
-        previous_nodes = self.Shortest_path(sender)
-        
-        while node != sender:
-            path.append(node)
-            node = previous_nodes[node]
+        ...
     
-        path.append(sender)
-        
-        self.way = reversed(path)
+    def all_routes(self):
+        defined_rutes = {}
+        rutes = []
+        for node_sender in self.nodes:
+            for node_receiver in self.nodes:
+                path = []
+                node = node_receiver
+                previous_nodes = self.Shortest_path(node_sender)
+                
+                while node != node_sender:
+                    path.append(node)
+                    node = previous_nodes[node]
+            
+                path.append(node_sender)
+                rutes.append([path[len(path) - i] for i in range(1, len(path)+1)])
 
-        return self.way
+        for node in self.nodes:
+            s = []
+            for rute in rutes:
+                if rute[0] == node:
+                    s.append(rute)
+            defined_rutes[node] = s
+        
+        return defined_rutes
     
     def Shortest_path(self, sender):
         unvisited_nodes = list(self.nodes)

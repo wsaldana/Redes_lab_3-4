@@ -132,7 +132,13 @@ class Dijkstra(Rounting):
         return self.graph[node1][node2]
 
     def route(self, sender: str, receiver: str) -> dict:
-        ...
+        print(self.rutes)
+
+        for routes in self.rutes[sender]:
+            if routes[-1] == receiver:
+                specific_route = routes
+
+        return specific_route
     
     def all_routes(self):
         defined_rutes = {}

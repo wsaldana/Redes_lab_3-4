@@ -301,7 +301,7 @@ if __name__ == "__main__":
         xmpp.register_plugin('xep_0199')
         xmpp.register_plugin('xep_0045') # Mulit-User Chat (MUC)
         xmpp.register_plugin('xep_0096') # Jabber Search 
-        xmpp.connect()
+        xmpp.connect(disable_starttls=True)
         xmpp.process(forever=False)
 
     elif op == "2":

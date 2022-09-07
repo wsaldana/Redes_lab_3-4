@@ -31,4 +31,4 @@ class Topology:
         nx.draw(DG, node_shape = "s", arrows = False)
         plt.show()
 
-        return DG.edges(), DG.nodes()
+        return DG.edges(), DG.nodes(), DG

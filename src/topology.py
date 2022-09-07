@@ -18,12 +18,15 @@ class Topology:
                 if i%2 == 0:
                     DG.add_node(f[i])
 
-        for f in a:
+        '''for f in a:
             for i in range(0, len(f)):
                 if i%2 == 1:
                     DG.add_edge(f[i - 1], f[1][i])
                 else:
-                    DG.add_edge(f[i], f[1][i])
+                    DG.add_edge(f[i], f[1][i])'''
+        for parent in data['config'].keys():
+            for child in data['config'][parent]:
+                DG.add_edge(parent, child)
 
         print(DG.nodes())
         print(DG.edges())

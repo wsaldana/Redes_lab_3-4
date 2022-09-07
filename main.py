@@ -287,7 +287,16 @@ if __name__ == "__main__":
         # Login
         usu = input("Ingrese usuario(usuario@alumchat.fun): ")
         password = getpass("Ingrese contraseña: ")
-        xmpp = Cliente(usu, password)
+        print(" 1) Flooding")
+        print(" 2) Distance Vector")
+        print(" 3) Dijkstra")
+        alg = input("Ingrese algoritmo: ")
+        if alg == "1":
+            xmpp = Cliente(usu, password, router='flooding')
+        elif alg == "2":
+            xmpp = Cliente(usu, password, router='distance')
+        else:
+            xmpp = Cliente(usu, password, router='dijkstra')
         xmpp.register_plugin('xep_0030')
         xmpp.register_plugin('xep_0199')
         xmpp.register_plugin('xep_0045') # Mulit-User Chat (MUC)

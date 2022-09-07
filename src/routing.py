@@ -15,7 +15,7 @@ class Flooding(Rounting):
     def __init__(self) -> None:
         self.passed = []
         self.way = {}
-        self.graph, self.nodes = Topology().read()
+        self.graph, self.nodes, self.dg = Topology().read()
 
     def route(self, sender: str, receiver: str) -> dict:
         self.passed.append(sender)
@@ -46,11 +46,9 @@ class DistanceVector(Rounting):
         self.nodes = list(self.nodes)
         self.graph = list(self.graph)
         self.graph_table = self.addEdges()
-        self.way = {}
     
     def route(self, sender: str, receiver: str) -> dict:
-
-        return self.way
+        self.BellmanFord(sender)
     
     def addEdges(self):
         listG = []
@@ -92,7 +90,7 @@ class Dijkstra(Rounting):
     def __init__(self) -> None:
         self.passed = []
         self.way = {}
-        self.edges, self.nodes = Topology().read()
+        self.edges, self.nodes, self.dg = Topology().read()
         self.init_graph = self.graph_base()
         self.graph = self.construct_graph()
         self.rutes = self.all_routes()

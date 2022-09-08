@@ -48,7 +48,7 @@ class DistanceVector(Rounting):
         self.graph_table = self.addEdges()
     
     def route(self, sender: str, receiver: str) -> dict:
-        self.BellmanFord(sender)
+        self.BellmanFord(sender, receiver)
     
     def addEdges(self):
         listG = []
@@ -243,9 +243,9 @@ class Router:
 
     alg: Rounting = None
     table: dict = {
-        "A": "walt123@alumchat.fun",
-        "B": "sal19897@alumchat.fun",
-        "C": "walt.gfe@alumchat.fun",
+        "A": "javier@alumchat.fun",
+        "B": "19324@alumchat.fun",
+        "C": "19111@alumchat.fun",
     }
 
     def __init__(self, alg: str) -> None:

@@ -69,31 +69,34 @@ class Cliente(slixmpp.ClientXMPP):
             print("-----------------------------")
             print("|     MENU DE FUNCIONES     |")
             print("-----------------------------")
-            print("|1.  Mensaje Directo        |")
-            print("|2.  Obtener ruta           |")
-            print("|3.  Salir                  |")
+            print("|1.  Enviar                 |")
+            print("|2.  Recibir                |")
+            print("|3.  Obtener ruta           |")
+            print("|4.  Salir                  |")
             print("-----------------------------")
-            # op = input("Ingrese opción:\t")
-            op_std, x, y = select.select([sys.stdin], [], [], 5)
-            if op_std:
-                op = sys.stdin.readline().strip()
-                if (op == "1"):
-                    self.DM()
+            op = input("Ingrese opción:\t")
 
-                elif (op == "2"):
-                    sender = input("Nodo inicial: ").upper()
-                    receiver = input("Nodo receptor: ").upper()
+            if (op == "1"):
+                self.DM()
 
-                    print(
-                        self.router.get_route(sender, receiver)
-                    )
+            elif (op == "2"):
+                while True:
+                    await self.get_roster()
 
-                elif(op == "3"):
-                    menu = False
-                    self.disconnect()
+            elif (op == "3"):
+                sender = input("Nodo inicial: ").upper()
+                receiver = input("Nodo receptor: ").upper()
 
-                else:
-                    pass
+                print(
+                    self.router.get_route(sender, receiver)
+                )
+
+            elif(op == "4"):
+                menu = False
+                self.disconnect()
+
+            else:
+                pass
 
 
 if __name__ == "__main__":

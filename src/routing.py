@@ -63,7 +63,9 @@ class DistanceVector(Rounting):
         for i in range(self.V):
             print("{0}\t\t{1}\t\t{2}".format(self.nodes[i], dist[i], routes[i]))
 
-    def BellmanFord(self, src):
+        return routes
+
+    def BellmanFord(self, src, rcv):
         dist = [float("Inf")] * self.V
         dist[self.nodes.index(src)] = 0
 
@@ -83,7 +85,29 @@ class DistanceVector(Rounting):
             nx.path_graph(self.dg)
             routes.append(nx.bellman_ford_path(self.dg, src, receiver))
         
-        self.printArr(dist, routes)
+        routes = self.printArr(dist, routes)
+        rutas = {}
+        
+        for i in routes:
+            if src == i[0] and rcv == i[-1]:
+                short_route = i
+
+        i = 0
+        next_nodes = []
+        while i < len(short_route):
+
+            next = []
+            try:
+                next.append(short_route[i+1])
+                next_nodes.append(next)
+            except IndexError:
+                next_nodes.append(next)
+
+            i += 1
+        
+        final_dictionary = dict(zip(short_route, next_nodes))
+
+        return final_dictionary
 
 
 class Dijkstra(Rounting):

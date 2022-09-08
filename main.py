@@ -31,13 +31,14 @@ class Cliente(slixmpp.ClientXMPP):
         self.router = Router(router)
         self.node = Node(node, usu)
 
-        self.add_event_handler("session_start", self.start)
+
         self.add_event_handler("message", self.receive_msg)
+        self.add_event_handler("session_start", self.start)
 
     def receive_msg(self, msg):
         if msg['type'] in ('chat', 'normal'):
-            msg_f = eval(msg['body'])
-            print(msg_f['message'])
+            print("\n >> MENSAJE RECIBIDO:")
+            print(msg['body'], "\n")
 
     def DM(self):
         de = input("Ingrese el nombre del nodo que envia: ")
@@ -64,6 +65,7 @@ class Cliente(slixmpp.ClientXMPP):
         menu = True
 
         while (menu):
+            await self.get_roster()
             print("-----------------------------")
             print("|     MENU DE FUNCIONES     |")
             print("-----------------------------")

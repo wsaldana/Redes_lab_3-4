@@ -7,31 +7,24 @@
 #-----------------------------------#
 
 import sys
+import select
 import asyncio
 import logging
 from getpass import getpass
-from slixmpp.exceptions import IqError, IqTimeout
-from slixmpp.xmlstream.stanzabase import ET
 import slixmpp
-import base64
 
 from src.routing import Router
 from src.models import Message, Node
 
-#-----------------------------------------------
-#| Esta linea permite que asyncio en versiones |
-#| más recientes de Python, tenga todos sus    |
-#| permiso(funcione)                           |
-#-----------------------------------------------
-if sys.platform == 'win32' and sys.version_info >= (3, 8):
-     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-#------------------------------------------------
-#| Clase para llevar a cabo todas las funciones |
-#| del cliente via el protocolo XMPP            |
-#------------------------------------------------
+if sys.platform == 'win32' and sys.version_info >= (3, 8):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
 class Cliente(slixmpp.ClientXMPP):
-    def __init__(self, usu, password, node: str = 'A', router: str = 'flooding'):
+    def __init__(
+        self, usu, password, node: str = 'A', router: str = 'flooding'
+    ):
         slixmpp.ClientXMPP.__init__(self, usu, password)
         self.usu = usu
         self.password = password
@@ -41,16 +34,14 @@ class Cliente(slixmpp.ClientXMPP):
         self.add_event_handler("session_start", self.start)
         self.add_event_handler("message", self.receive_msg)
 
-    async def receive_msg(self, msg):
-        print(msg)
+    def receive_msg(self, msg):
+        if msg['type'] in ('chat', 'normal'):
+            msg_f = eval(msg['body'])
+            print(msg_f['message'])
 
-    #-------------------------------------
-    #|Función para enviar mensajes 1 a 1 |
-    #-------------------------------------
     def DM(self):
         de = input("Ingrese el nombre del nodo que envia: ")
         para = input("Ingrese el nombre del nodo que recibe: ")
-        self.Notification(para)
         msg = input("Ingrese mensaje:  ")
 
         json_msg = Message(
@@ -66,146 +57,6 @@ class Cliente(slixmpp.ClientXMPP):
             mtype="chat"
         )
 
-    #----------------------------
-    #|Función para cerrar sesión|
-    #----------------------------
-    def logout(self):
-        self.disconnect()
-        print("-----Sesión cerrada, Conectese Pronto:)-----")
-    
-    #------------------------------
-    #|Función para añadir contacto|
-    #------------------------------
-    def AddContact(self):
-        contacto = input("Ingrese el contacto(ejemplo@alumchat.fun): ")
-        try:
-            self.send_presence_subscription(pto=contacto) 
-            self.send_message(mto=contacto,
-                          mbody="Hola, quieres ser mi amigo?",
-                          mtype='chat')
-        except IqTimeout:
-            print("Conexión Perdida") 
-        
-        self.send_presence()
-        self.get_roster()
-
-    #--------------------------------
-    #|Función para mostrar contactos|
-    #--------------------------------
-    def ShowContacts(self):
-        print('Contactos %s' % self.boundjid.bare)
-        groups = self.client_roster.groups()
-        for group in groups:
-            print('Grupo: %s' % group)
-            for jid in groups[group]:
-                name = self.client_roster[jid]['name']
-                if self.client_roster[jid]['name']:
-                    print(' %s (%s)' % (name, jid))
-                else:
-                    print('\n',jid)
-
-                connections = self.client_roster.presence(jid)
-                for res, pres in connections.items():
-                    show = 'available'
-                    if pres['show']:
-                        show = pres['show']
-                    print('   - %s (%s)' % (res, show))
-                    if pres['status']:
-                        print('       %s' % pres['status'])
-
-    #-------------------------------------------------
-    #|Función para mostrar información de un contacto|
-    #-------------------------------------------------
-    def UserInfo(self):
-        self.get_roster()
-        usuario = input("Ingrese usuario del contacto del que quiere información(ejemplo@alumchat.fun): ")
-        estado = self.client_roster.presence(usuario)
-        subs = self.client_roster[usuario]['subscription']
-        grupos = self.client_roster[usuario]['groups']
-
-        print("--------INFORMACIÓN--------")
-        print("Usuario: ", usuario)
-        print("Subscripción: ", subs)
-        print("Grupos", grupos)
-        for res, pres in estado.items():
-            print("Estado: ", estado[res]["status"])
-            print("Prioridad: ", estado[res]["priority"])
-
-    #--------------------------------
-    #|Función para mensajería grupal|
-    #--------------------------------
-    def GroupMSG(self):
-        self.register_plugin('xep_0030')
-        self.register_plugin('xep_0045')
-        self.register_plugin('xep_0199')
-
-        room = input("Nombre del grupo (ejemplo@conference.alumchat.fun): ")
-        nickname = input("Apodo/Alias ")
-        message = input('Mensaje a enviar al grupo: ')
-        self.plugin['xep_0045'].join_muc(room, nickname)
-        self.send_message(mto=room, mbody=message, mtype='groupchat')
-
-    #-----------------------------------
-    #|Función para mensaje de presencia|
-    #-----------------------------------
-    def PresMSG(self):
-        estado = input("Actualiza tu estado(Available, Not Available, Do not Disturb): ")
-        info = input("Que información quiere mostrar en el perfil (chat, away, dnd): ")
-        self.send_presence(pshow=info, pstatus=estado)
-        print("--------Se ha actualizado el estado--------")
-
-    #----------------------------------
-    #|Función para mandar notificación|
-    #----------------------------------
-    def Notification(self, to):
-        notification = self.Message()
-        notification["chat_state"] = "composing"
-        notification["to"] = to
-        notification.send()
-
-    #----------------------------------------
-    #|Función para mandar archivos en base64|
-    #----------------------------------------
-    def sendF(self):
-        para = input("Indique el usuario al que quiere enviar: ") 
-        archivo = input("Direccion del archivo: ")
-        
-        with open(archivo, 'rb') as f:
-            file_ = base64.b64encode(f.read()).decode('utf-8')
-
-        self.send_message(mto=para, mbody=file_, msubject='send_file', mtype='chat')
-
-    #----------------------------------
-    #|Función para eliminar una cuenta|
-    #----------------------------------
-    def Delete(self):
-        self.send_presence()
-        self.get_roster()
-
-        delete = self.Iq()
-        delete['type'] = 'set'
-        delete['from'] = self.usu
-        fragment = ET.fromstring("<query xmlns='jabber:iq:register'><remove/></query>")
-        delete.append(fragment)
-
-        try:
-            delete.send()
-            print("Cuenta Borrada")
-        except IqError as e:
-
-            print("Error", e)
-        except IqTimeout:
-
-            print("timeout del server")
-        except Exception as e:
-
-            print(e)
-
-        self.disconnect()
-
-    #---------------------------------------
-    #|Función asincronica que lleva el menú|
-    #---------------------------------------
     async def start(self, event):
         self.send_presence()
         await self.get_roster()
@@ -216,57 +67,31 @@ class Cliente(slixmpp.ClientXMPP):
             print("-----------------------------")
             print("|     MENU DE FUNCIONES     |")
             print("-----------------------------")
-            print("|1.  Mostrar Contactos      |")
-            print("|2.  Agregar Contacto       |")
-            print("|3.  Detalles Contacto      |")
-            print("|4.  Mensaje Directo        |")
-            print("|5.  Conversación Grupal    |")
-            print("|6.  Mensaje de Presencia   |")
-            print("|7.  Archivos               |")
-            print("|8.  Eliminar               |")
-            print("|9.  Salir                  |")
-            print("|10. Obtener ruta           |")
+            print("|1.  Mensaje Directo        |")
+            print("|2.  Obtener ruta           |")
+            print("|3.  Salir                  |")
             print("-----------------------------")
-            op = input("Ingrese opción:\t")
+            # op = input("Ingrese opción:\t")
+            op_std, x, y = select.select([sys.stdin], [], [], 5)
+            if op_std:
+                op = sys.stdin.readline().strip()
+                if (op == "1"):
+                    self.DM()
 
-            if (op == "1"):
-                self.ShowContacts()
+                elif (op == "2"):
+                    sender = input("Nodo inicial: ").upper()
+                    receiver = input("Nodo receptor: ").upper()
 
-            elif (op == "2"):
-                self.AddContact()
+                    print(
+                        self.router.get_route(sender, receiver)
+                    )
 
-            elif(op == "3"):
-                self.UserInfo()
+                elif(op == "3"):
+                    menu = False
+                    self.disconnect()
 
-            elif(op == "4"):
-                self.DM()
-
-            elif(op == "5"):
-                self.GroupMSG()
-
-            elif(op == "6"):
-                self.PresMSG()
-
-            elif(op == "7"):
-                self.sendF()
-
-            elif(op == "8"):
-                self.Delete()
-
-            elif(op == "9"):
-                menu = False
-                self.logout()
-
-            else:
-                sender = input("Nodo inicial: ").upper()
-                receiver = input("Nodo receptor: ").upper()
-
-                print(
-                    self.router.get_route(sender, receiver)
-                )
-
-            self.send_presence()
-            await self.get_roster()
+                else:
+                    pass
 
 
 if __name__ == "__main__":
@@ -299,8 +124,8 @@ if __name__ == "__main__":
             xmpp = Cliente(usu, password, router='dijkstra')
         xmpp.register_plugin('xep_0030')
         xmpp.register_plugin('xep_0199')
-        xmpp.register_plugin('xep_0045') # Mulit-User Chat (MUC)
-        xmpp.register_plugin('xep_0096') # Jabber Search 
+        xmpp.register_plugin('xep_0045')
+        xmpp.register_plugin('xep_0096')
         xmpp.connect(disable_starttls=True)
         xmpp.process(forever=False)
 

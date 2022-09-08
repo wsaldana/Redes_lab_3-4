@@ -48,7 +48,8 @@ class DistanceVector(Rounting):
         self.graph_table = self.addEdges()
     
     def route(self, sender: str, receiver: str) -> dict:
-        self.BellmanFord(sender, receiver)
+        diccionario = self.BellmanFord(sender, receiver)
+        return diccionario
     
     def addEdges(self):
         listG = []

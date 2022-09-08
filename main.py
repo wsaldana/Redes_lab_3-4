@@ -36,8 +36,9 @@ class Cliente(slixmpp.ClientXMPP):
 
     def receive_msg(self, msg):
         if msg['type'] in ('chat', 'normal'):
-            msg_f = eval(msg['body'])
-            print(msg_f['message'])
+            print("From ", msg["from"])
+            print("Message ", msg["body"])
+            #print(msg_f['message'])
 
     def DM(self):
         de = input("Ingrese el nombre del nodo que envia: ")

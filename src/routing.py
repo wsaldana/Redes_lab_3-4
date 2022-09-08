@@ -130,13 +130,33 @@ class Dijkstra(Rounting):
         return self.graph[node1][node2]
 
     def route(self, sender: str, receiver: str) -> dict:
-        print(self.rutes)
+        print("\n")
+        print('\033[2;32;40m')
+        for routes in self.rutes[sender]:
+            print(routes, " with number of steps ->", len(routes)-1)
+        print('\033[0;37;40m')
+
+        route = []
+        next_nodes = []
 
         for routes in self.rutes[sender]:
             if routes[-1] == receiver:
-                specific_route = routes
+                route = routes
+        
+        i = 0
 
-        return specific_route
+        while i < len(route):
+            next = []
+            try:
+                next.append(route[i+1])
+                next_nodes.append(next)
+            except IndexError:
+                next_nodes.append(next)
+            i += 1
+        
+        final_dictionary = dict(zip(route, next_nodes))
+
+        return final_dictionary
     
     def all_routes(self):
         defined_rutes = {}

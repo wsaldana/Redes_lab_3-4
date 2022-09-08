@@ -81,9 +81,9 @@ class DistanceVector(Rounting):
 
         #RUTAS
         routes = []
-        for receiver in self.nodes:
+        for r in self.nodes:
             nx.path_graph(self.dg)
-            routes.append(nx.bellman_ford_path(self.dg, src, receiver))
+            routes.append(nx.bellman_ford_path(self.dg, src, r))
         
         routes = self.printArr(dist, routes)
         rutas = {}

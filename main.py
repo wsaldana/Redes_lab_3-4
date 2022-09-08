@@ -12,6 +12,7 @@ import asyncio
 import logging
 from getpass import getpass
 import slixmpp
+import json
 
 from src.routing import Router
 from src.models import Message, Node
@@ -37,26 +38,36 @@ class Cliente(slixmpp.ClientXMPP):
 
     def receive_msg(self, msg):
         if msg['type'] in ('chat', 'normal'):
-            print("\n >> MENSAJE RECIBIDO:")
-            print(msg['body'], "\n")
+            msg_json = eval(msg['body'])
+            self.DM(msg_json["sender"], msg_json["receiver"], msg_json["message"])
 
-    def DM(self):
-        de = input("Ingrese el nombre del nodo que envia: ")
-        para = input("Ingrese el nombre del nodo que recibe: ")
-        msg = input("Ingrese mensaje:  ")
+            print("\n >> MENSAJE RECIBIDO:")
+            print(str(msg_json), "\n")
+
+    def DM(self, _from=None, to=None, message=None):
+        me = list(
+            {
+                k: v for (k, v) in self.router.table.items() if v == self.usu
+            }.keys()
+        )[0]
+        de = me if _from is None else _from
+        para = input("Para nodo (enter para flooding): ") if to is None else to
+        msg = input("Mensaje:  ") if message is None else message
 
         json_msg = Message(
             msg,
             de,
             para
         )
-        # receiver = self.router.get_next().name
 
-        self.send_message(
-            mto=self.router.table[para],
-            mbody=json_msg.serialize(),
-            mtype="chat"
-        )
+        receivers = self.router.get_next(me, de, para)
+
+        for node in receivers:
+            self.send_message(
+                mto=self.router.table[node],
+                mbody=json_msg.serialize(),
+                mtype="chat"
+            )
 
     async def start(self, event):
         self.send_presence()
@@ -80,6 +91,7 @@ class Cliente(slixmpp.ClientXMPP):
                 self.DM()
 
             elif (op == "2"):
+                print("\n Waiting a msg to arrive...")
                 while True:
                     await self.get_roster()
 

@@ -199,15 +199,9 @@ class Router:
 
     alg: Rounting = None
     table: dict = {
-        "A": "19324@alumchat.fun",
-        "B": "19422@alumchat.fun",
-        "C": "19402@alumchat.fun",
-        "D": "rom19199@alumchat.fun",
-        "E": "est181099@alumchat.fun",
-        "F": "sal19897@alumchat.fun",
-        "G": "laure@alumchat.fun",
-        "H": "19111@alumchat.fun",
-        "I": "alf19372@alumchat.fun",
+        "A": "walt123@alumchat.fun",
+        "B": "sal19897@alumchat.fun",
+        "C": "walt.gfe@alumchat.fun",
     }
 
     def __init__(self, alg: str) -> None:
@@ -220,3 +214,10 @@ class Router:
 
     def get_route(self, sender, receiver) -> Node:
         return self.alg.route(sender, receiver)
+
+    def get_next(self, me, sender, receiver):
+        route = self.get_route(sender, receiver)
+        try:
+            return route[me]
+        except KeyError:
+            return []

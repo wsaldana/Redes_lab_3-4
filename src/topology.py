@@ -27,6 +27,7 @@ class Topology:
         for parent in data['config'].keys():
             for child in data['config'][parent]:
                 DG.add_edge(parent, child)
+                DG.add_edge(child, parent)
 
         print(DG.nodes())
         print(DG.edges())

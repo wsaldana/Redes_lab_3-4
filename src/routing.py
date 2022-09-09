@@ -247,7 +247,7 @@ class Router:
         "A": "walt123@alumchat.fun",
         "B": "JoseBott@alumchat.fun",
         "C": "est181099@alumchat.fun",
-        "D": "laure @alumchat.fun",
+        "D": "laure@alumchat.fun",
         "E": "rom19199@alumchat.fun",
         "F": "javier@alumchat.fun",
     }

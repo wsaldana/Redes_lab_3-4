@@ -244,10 +244,12 @@ class Router:
 
     alg: Rounting = None
     table: dict = {
-        "A": "javier@alumchat.fun",
+        "A": "walt123@alumchat.fun",
         "B": "JoseBott@alumchat.fun",
-        "C": "walt123@alumchat.fun",
-        "D": "walt.gfe@alumchat.fun",
+        "C": "est181099@alumchat.fun",
+        "D": "laure @alumchat.fun",
+        "E": "rom19199@alumchat.fun",
+        "F": "javier@alumchat.fun",
     }
 
     def __init__(self, alg: str) -> None:
